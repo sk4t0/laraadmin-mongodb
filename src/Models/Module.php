@@ -12,7 +12,7 @@ namespace Dwij\Laraadmin\Models;
 use Jenssegers\Mongodb\Eloquent\Model;
 //use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
+use Jenssegers\Mongodb\Schema\Blueprint;
 use Exception;
 use Log;
 use DB;

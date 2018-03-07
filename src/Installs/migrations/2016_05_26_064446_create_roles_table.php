@@ -7,7 +7,7 @@
  * Developer Website: http://dwijitsolutions.com
  */
 
-use Illuminate\Database\Schema\Blueprint;
+use Jenssegers\Mongodb\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 use Dwij\Laraadmin\Models\Module;
 
