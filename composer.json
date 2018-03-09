@@ -43,6 +43,6 @@
          {
              "type": "vcs",
              "url": "https://github.com/sk4t0/entrust-mongodb"
-         },
+         }
      ]
 }
