@@ -10,7 +10,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use Auth;
-use DB;
+use Jenssegers\Mongodb\Connection as DB;
 use Validator;
 use Datatables;
 use Collective\Html\FormFacade as Form;
@@ -146,7 +146,7 @@ class BackupsController extends Controller
 	 */
 	public function dtajax()
 	{
-		$values = DB::connection('mongodb')->collection('backups')->select($this->listing_cols)->orderBy('created_at', 'desc')->whereNull('deleted_at');
+		$values = DB::collection('backups')->select($this->listing_cols)->orderBy('created_at', 'desc')->whereNull('deleted_at');
 		$out = Datatables::of($values)->make();
 		$data = $out->getData();
 

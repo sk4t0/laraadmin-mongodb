@@ -12,7 +12,7 @@ namespace Dwij\Laraadmin\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests;
-use DB;
+use Jenssegers\Mongodb\Connection as DB;
 use Schema;
 
 use Dwij\Laraadmin\Models\Module;
@@ -125,7 +125,7 @@ class FieldController extends Controller
         $module = Module::find($field->module);
         
         // echo $module->name_db." ".$field->colname." ".$request->field_value;
-        $rowCount = DB::connection('mongodb')->collection($module->name_db)->where($field->colname, $request->field_value)->where("id", "!=", $request->row_id)->whereNull('deleted_at')->count();
+        $rowCount = DB::collection($module->name_db)->where($field->colname, $request->field_value)->where("id", "!=", $request->row_id)->whereNull('deleted_at')->count();
         
         if($rowCount > 0) {
             $valExists = true;

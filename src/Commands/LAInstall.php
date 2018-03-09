@@ -14,7 +14,7 @@ use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 use Dwij\Laraadmin\Helpers\LAHelper;
 use Eloquent;
-use DB;
+use Jenssegers\Mongodb\Connection as DB;
 
 /**
  * Class LAInstall
@@ -212,7 +212,7 @@ class LAInstall extends Command
                 
                 // Checking database
                 $this->line('Checking database connectivity...');
-                DB::connection()->reconnect();
+                DB::reconnect();
                 
                 // Running migrations...
                 $this->line('Running migrations...');

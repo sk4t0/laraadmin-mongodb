@@ -13,7 +13,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use Auth;
-use DB;
+use Jenssegers\Mongodb\Connection as DB;
 use Validator;
 use Datatables;
 use Collective\Html\FormFacade as Form;
@@ -205,7 +205,7 @@ class __controller_class_name__ extends Controller
         $module = Module::get('__module_name__');
         $listing_cols = $this->listing_cols;
         
-        $values = DB::connection('mongodb')->collection('__db_table_name__')->select($listing_cols)->whereNull('deleted_at');
+        $values = DB::collection('__db_table_name__')->select($listing_cols)->whereNull('deleted_at');
         $out = Datatables::of($values)->make();
         $data = $out->getData();
         

@@ -12,7 +12,7 @@ namespace Dwij\Laraadmin\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests;
-use DB;
+use Jenssegers\Mongodb\Connection as DB;
 use Dwij\Laraadmin\Helpers\LAHelper;
 use Dwij\Laraadmin\Models\Module;
 use Dwij\Laraadmin\Models\ModuleFields;
@@ -388,11 +388,11 @@ class ModuleController extends Controller
                     $access = 'write';
                 }
                 
-                $query = DB::connection('mongodb')->collection('role_module_fields')->where('role_id', $role->id)->where('field_id', $field['id']);
+                $query = DB::collection('role_module_fields')->where('role_id', $role->id)->where('field_id', $field['id']);
                 if($query->count() == 0) {
-                    DB::connection('mongodb')->insert('insert into role_module_fields (role_id, field_id, access, created_at, updated_at) values (?, ?, ?, ?, ?)', [$role->id, $field['id'], $access, $now, $now]);
+                    DB::insert('insert into role_module_fields (role_id, field_id, access, created_at, updated_at) values (?, ?, ?, ?, ?)', [$role->id, $field['id'], $access, $now, $now]);
                 } else {
-                    DB::connection('mongodb')->collection('role_module_fields')->where('role_id', $role->id)->where('field_id', $field['id'])->update(['access' => $access]);
+                    DB::collection('role_module_fields')->where('role_id', $role->id)->where('field_id', $field['id'])->update(['access' => $access]);
                 }
             }
             
@@ -425,11 +425,11 @@ class ModuleController extends Controller
                     $delete = 0;
                 }
                 
-                $query = DB::connection('mongodb')->collection('role_module')->where('role_id', $role->id)->where('module_id', $id);
+                $query = DB::collection('role_module')->where('role_id', $role->id)->where('module_id', $id);
                 if($query->count() == 0) {
-                    DB::connection('mongodb')->insert('insert into role_module (role_id, module_id, acc_view, acc_create, acc_edit, acc_delete, created_at, updated_at) values (?, ?, ?, ?, ?, ?, ?, ?)', [$role->id, $id, $view, $create, $edit, $delete, $now, $now]);
+                    DB::insert('insert into role_module (role_id, module_id, acc_view, acc_create, acc_edit, acc_delete, created_at, updated_at) values (?, ?, ?, ?, ?, ?, ?, ?)', [$role->id, $id, $view, $create, $edit, $delete, $now, $now]);
                 } else {
-                    DB::connection('mongodb')->collection('role_module')->where('role_id', $role->id)->where('module_id', $id)->update(['acc_view' => $view, 'acc_create' => $create, 'acc_edit' => $edit, 'acc_delete' => $delete]);
+                    DB::collection('role_module')->where('role_id', $role->id)->where('module_id', $id)->update(['acc_view' => $view, 'acc_create' => $create, 'acc_edit' => $edit, 'acc_delete' => $delete]);
                 }
             }
         }
@@ -448,7 +448,7 @@ class ModuleController extends Controller
         $sort_array = $request->sort_array;
         
         foreach($sort_array as $index => $field_id) {
-            DB::connection('mongodb')->collection('module_fields')->where('id', $field_id)->update(['sort' => ($index + 1)]);
+            DB::collection('module_fields')->where('id', $field_id)->update(['sort' => ($index + 1)]);
         }
         
         return response()->json([

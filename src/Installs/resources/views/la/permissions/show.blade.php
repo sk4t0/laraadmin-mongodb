@@ -131,7 +131,7 @@
 									<label for="ratings_innovation" class="col-md-2">{{ $role->display_name }} :</label>
 									<div class="col-md-10 fvalue star_class">
 										<?php
-										$query = DB::connection('mongodb')->collection('permission_role')->where('permission_id', $permission->id)->where('role_id', $role->id);
+										$query = DB::collection('permission_role')->where('permission_id', $permission->id)->where('role_id', $role->id);
 										?>
 										@if($query->count() > 0)
 											<input type="checkbox" name="permi_role_{{ $role->id }}" value="1" checked>

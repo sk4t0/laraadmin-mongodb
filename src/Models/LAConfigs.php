@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Schema;
 use Jenssegers\Mongodb\Schema\Blueprint;
 use Exception;
 use Log;
-use DB;
+use Jenssegers\Mongodb\Connection as DB;
 use Dwij\Laraadmin\Helpers\LAHelper;
 
 /**

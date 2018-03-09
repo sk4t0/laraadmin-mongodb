@@ -19,7 +19,7 @@ use Dwij\Laraadmin\Helpers\LAHelper;
 use Zizaco\Entrust\EntrustFacade as Entrust;
 
 use Auth;
-use DB;
+use Jenssegers\Mongodb\Connection as DB;
 use File;
 use Validator;
 use Datatables;

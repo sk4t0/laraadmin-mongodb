@@ -275,7 +275,7 @@ use Dwij\Laraadmin\Models\ModuleFields;
 							// check if this column exists in Module
 							$field = ModuleFields::where('colname', $col)->where('module', $module->id)->first();
 							if($col != 'id' && $col != 'deleted_at' && $col != 'created_at' && $col != 'updated_at' && !isset($field->id)) {
-								$column = DB::connection()->getDoctrineColumn($module->name_db, $col);
+								$column = DB::getDoctrineColumn($module->name_db, $col);
 								if($column->getDefault() == '') {
 									$default = "None";
 								} else {

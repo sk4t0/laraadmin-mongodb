@@ -10,7 +10,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use Auth;
-use DB;
+use Jenssegers\Mongodb\Connection as DB;
 use Validator;
 use Datatables;
 use Collective\Html\FormFacade as Form;
@@ -262,7 +262,7 @@ class EmployeesController extends Controller
 	 */
 	public function dtajax()
 	{
-		$values = DB::connection('mongodb')->collection('employees')->select($this->listing_cols)->whereNull('deleted_at');
+		$values = DB::collection('employees')->select($this->listing_cols)->whereNull('deleted_at');
 		$out = Datatables::of($values)->make();
 		$data = $out->getData();
 

@@ -15,6 +15,7 @@ use Dwij\Laraadmin\Models\Module;
 use Dwij\Laraadmin\Models\ModuleFieldTypes;
 use Dwij\Laraadmin\Helpers\LAHelper;
 use Dwij\Laraadmin\Models\Menu;
+use DB;
 
 /**
  * Class CodeGenerator
@@ -394,8 +395,8 @@ class CodeGenerator
                     $migrationFileName = $fileExistName;
                 } else {
                     // If migration not exists in migrations table
-                    if(\DB::connection('mongodb')->collection('migrations')->where('migration', 'like', '%' . $migrationName . '%')->count() == 0) {
-                        \DB::connection('mongodb')->collection('migrations')->insert([
+                    if(DB::collection('migrations')->where('migration', 'like', '%' . $migrationName . '%')->count() == 0) {
+                        DB::collection('migrations')->insert([
                             'migration' => str_replace(".php", "", $migrationFileName),
                             'batch' => 1
                         ]);

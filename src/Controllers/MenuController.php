@@ -13,7 +13,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Http\Request;
 use App\Http\Requests;
-use DB;
+use Jenssegers\Mongodb\Connection as DB;
 
 use Dwij\Laraadmin\Models\Menu;
 use Dwij\Laraadmin\Models\Module;

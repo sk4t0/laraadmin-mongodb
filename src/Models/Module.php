@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Schema;
 use Jenssegers\Mongodb\Schema\Blueprint;
 use Exception;
 use Log;
-use DB;
+use Jenssegers\Mongodb\Connection as DB;
 use Dwij\Laraadmin\Helpers\LAHelper;
 
 /**
@@ -331,7 +331,7 @@ class Module extends Eloquent
                 if($field->defaultvalue == NULL || $field->defaultvalue == "" || $field->defaultvalue == "NULL") {
                     $var->default(NULL);
                 } else if($field->defaultvalue == "now()") {
-                    $var->default(DB::connection('mongodb')->raw('CURRENT_TIMESTAMP'));
+                    $var->default(DB::raw('CURRENT_TIMESTAMP'));
                 } else if($field->required) {
                     $var->default("1970-01-01 01:01:01");
                 } else {
@@ -1063,10 +1063,10 @@ class Module extends Eloquent
             $uniqueFields = ModuleFields::where('module', $module->id)->where('unique', '1')->get()->toArray();
             foreach($uniqueFields as $field) {
                 Log::debug("insert: " . $module->name_db . " - " . $field['colname'] . " - " . $request->{$field['colname']});
-                $old_row = DB::connection('mongodb')->collection($module->name_db)->whereNotNull('deleted_at')->where($field['colname'], $request->{$field['colname']})->first();
+                $old_row = DB::collection($module->name_db)->whereNotNull('deleted_at')->where($field['colname'], $request->{$field['colname']})->first();
                 if(isset($old_row->id)) {
                     Log::debug("deleting: " . $module->name_db . " - " . $field['colname'] . " - " . $request->{$field['colname']});
-                    DB::connection('mongodb')->collection($module->name_db)->whereNotNull('deleted_at')->where($field['colname'], $request->{$field['colname']})->delete();
+                    DB::collection($module->name_db)->whereNotNull('deleted_at')->where($field['colname'], $request->{$field['colname']})->delete();
                 }
             }
             
@@ -1245,9 +1245,9 @@ class Module extends Eloquent
         $module = Module::get($module->name);
         
         if($specific_role) {
-            $roles_arr = DB::connection('mongodb')->collection('roles')->where('id', $specific_role)->get();
+            $roles_arr = DB::collection('roles')->where('id', $specific_role)->get();
         } else {
-            $roles_arr = DB::connection('mongodb')->collection('roles')->get();
+            $roles_arr = DB::collection('roles')->get();
         }
         $roles = array();
         
@@ -1260,7 +1260,7 @@ class Module extends Eloquent
         foreach($roles_arr as $role) {
             // get Current Module permissions for this role
             
-            $module_perm = DB::connection('mongodb')->collection('role_module')->where('role_id', $role->id)->where('module_id', $module->id)->first();
+            $module_perm = DB::collection('role_module')->where('role_id', $role->id)->where('module_id', $module->id)->first();
             if(isset($module_perm->id)) {
                 // set db values
                 $role->view = $module_perm->acc_view;
@@ -1279,7 +1279,7 @@ class Module extends Eloquent
             $role->fields = array();
             foreach($module->fields as $field) {
                 // find role field permission
-                $field_perm = DB::connection('mongodb')->collection('role_module_fields')->where('role_id', $role->id)->where('field_id', $field['id'])->first();
+                $field_perm = DB::collection('role_module_fields')->where('role_id', $role->id)->where('field_id', $field['id'])->first();
                 
                 if(isset($field_perm->id)) {
                     $field['access'] = $arr_field_access[$field_perm->access];
@@ -1326,7 +1326,7 @@ class Module extends Eloquent
             $roles = \Auth::user()->roles();
         }
         foreach($roles->get() as $role) {
-            $module_perm = DB::connection('mongodb')->collection('role_module')->where('role_id', $role->id)->where('module_id', $module_id)->first();
+            $module_perm = DB::collection('role_module')->where('role_id', $role->id)->where('module_id', $module_id)->first();
             if(isset($module_perm->id)) {
                 if(isset($module_perm->{"acc_" . $access_type}) && $module_perm->{"acc_" . $access_type} == 1) {
                     return true;
@@ -1387,7 +1387,7 @@ class Module extends Eloquent
         $hasModuleAccess = false;
         
         foreach($roles->get() as $role) {
-            $module_perm = DB::connection('mongodb')->collection('role_module')->where('role_id', $role->id)->where('module_id', $module_id)->first();
+            $module_perm = DB::collection('role_module')->where('role_id', $role->id)->where('module_id', $module_id)->first();
             if(isset($module_perm->id)) {
                 if($access_type == "view" && isset($module_perm->{"acc_" . $access_type}) && $module_perm->{"acc_" . $access_type} == 1) {
                     $hasModuleAccess = true;
@@ -1403,7 +1403,7 @@ class Module extends Eloquent
             }
         }
         if($hasModuleAccess) {
-            $module_field_perm = DB::connection('mongodb')->collection('role_module_fields')->where('role_id', $role->id)->where('field_id', $field_id)->first();
+            $module_field_perm = DB::collection('role_module_fields')->where('role_id', $role->id)->where('field_id', $field_id)->first();
             if(isset($module_field_perm->access)) {
                 if($access_type == "view" && ($module_field_perm->{"access"} == "readonly" || $module_field_perm->{"access"} == "write")) {
                     return true;
@@ -1438,7 +1438,7 @@ class Module extends Eloquent
         
         // Log::debug('Module:setDefaultRoleAccess ('.$module_id.', '.$role_id.', '.$access_type.')');
         
-        $role = DB::connection('mongodb')->collection('roles')->where('id', $role_id)->first();
+        $role = DB::collection('roles')->where('id', $role_id)->first();
         
         $access_view = 0;
         $access_create = 0;
@@ -1466,22 +1466,22 @@ class Module extends Eloquent
         
         // 1. Set Module Access
         
-        $module_perm = DB::connection('mongodb')->collection('role_module')->where('role_id', $role->id)->where('module_id', $module->id)->first();
+        $module_perm = DB::collection('role_module')->where('role_id', $role->id)->where('module_id', $module->id)->first();
         if(!isset($module_perm->id)) {
-            DB::connection('mongodb')->insert('insert into role_module (role_id, module_id, acc_view, acc_create, acc_edit, acc_delete, created_at, updated_at) values (?, ?, ?, ?, ?, ?, ?, ?)', [$role->id, $module->id, $access_view, $access_create, $access_edit, $access_delete, $now, $now]);
+            DB::insert('insert into role_module (role_id, module_id, acc_view, acc_create, acc_edit, acc_delete, created_at, updated_at) values (?, ?, ?, ?, ?, ?, ?, ?)', [$role->id, $module->id, $access_view, $access_create, $access_edit, $access_delete, $now, $now]);
         } else {
-            DB::connection('mongodb')->collection('role_module')->where('role_id', $role->id)->where('module_id', $module->id)->update(['acc_view' => $access_view, 'acc_create' => $access_create, 'acc_edit' => $access_edit, 'acc_delete' => $access_delete]);
+            DB::collection('role_module')->where('role_id', $role->id)->where('module_id', $module->id)->update(['acc_view' => $access_view, 'acc_create' => $access_create, 'acc_edit' => $access_edit, 'acc_delete' => $access_delete]);
         }
         
         // 2. Set Module Fields Access
         
         foreach($module->fields as $field) {
             // find role field permission
-            $field_perm = DB::connection('mongodb')->collection('role_module_fields')->where('role_id', $role->id)->where('field_id', $field['id'])->first();
+            $field_perm = DB::collection('role_module_fields')->where('role_id', $role->id)->where('field_id', $field['id'])->first();
             if(!isset($field_perm->id)) {
-                DB::connection('mongodb')->insert('insert into role_module_fields (role_id, field_id, access, created_at, updated_at) values (?, ?, ?, ?, ?)', [$role->id, $field['id'], $access_fields, $now, $now]);
+                DB::insert('insert into role_module_fields (role_id, field_id, access, created_at, updated_at) values (?, ?, ?, ?, ?)', [$role->id, $field['id'], $access_fields, $now, $now]);
             } else {
-                DB::connection('mongodb')->collection('role_module_fields')->where('role_id', $role->id)->where('field_id', $field['id'])->update(['access' => $access_fields]);
+                DB::collection('role_module_fields')->where('role_id', $role->id)->where('field_id', $field['id'])->update(['access' => $access_fields]);
             }
         }
     }
@@ -1501,7 +1501,7 @@ class Module extends Eloquent
         $field = ModuleFields::find($field_id);
         $module = Module::get($field->module);
         
-        $role = DB::connection('mongodb')->collection('roles')->where('id', $role_id)->first();
+        $role = DB::collection('roles')->where('id', $role_id)->first();
         
         $access_fields = "invisible";
         
@@ -1515,11 +1515,11 @@ class Module extends Eloquent
         $now = date("Y-m-d H:i:s");
         
         // find role field permission
-        $field_perm = DB::connection('mongodb')->collection('role_module_fields')->where('role_id', $role->id)->where('field_id', $field->id)->first();
+        $field_perm = DB::collection('role_module_fields')->where('role_id', $role->id)->where('field_id', $field->id)->first();
         if(!isset($field_perm->id)) {
-            DB::connection('mongodb')->insert('insert into role_module_fields (role_id, field_id, access, created_at, updated_at) values (?, ?, ?, ?, ?)', [$role->id, $field->id, $access_fields, $now, $now]);
+            DB::insert('insert into role_module_fields (role_id, field_id, access, created_at, updated_at) values (?, ?, ?, ?, ?)', [$role->id, $field->id, $access_fields, $now, $now]);
         } else {
-            DB::connection('mongodb')->collection('role_module_fields')->where('role_id', $role->id)->where('field_id', $field->id)->update(['access' => $access_fields]);
+            DB::collection('role_module_fields')->where('role_id', $role->id)->where('field_id', $field->id)->update(['access' => $access_fields]);
         }
     }
     

@@ -13,6 +13,7 @@ use Schema;
 use Collective\Html\FormFacade as Form;
 use Dwij\Laraadmin\Models\Module;
 use Dwij\Laraadmin\Models\ModuleFieldTypes;
+use DB;
 
 /**
  * Class LAFormMaker
@@ -673,7 +674,7 @@ class LAFormMaker
                         $model = "App\\Models\\" . ucfirst(str_singular($table_name));
                         $result = $model::all();
                     } else {
-                        $result = \DB::connection('mongodb')->collection($table_name)->get();
+                        $result = DB::collection($table_name)->get();
                     }
                     // find view column name
                     $view_col = "";
