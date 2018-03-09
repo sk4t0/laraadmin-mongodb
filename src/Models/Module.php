@@ -1434,7 +1434,7 @@ class Module extends Eloquent
     public static function setDefaultRoleAccess($module_id, $role_id, $access_type = "readonly")
     {
         $module = Module::find($module_id);
-        $module = Module::get($module->name);
+        $module = Module::get($module_id);
         
         // Log::debug('Module:setDefaultRoleAccess ('.$module_id.', '.$role_id.', '.$access_type.')');
         
