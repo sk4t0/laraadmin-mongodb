@@ -205,7 +205,7 @@ class __controller_class_name__ extends Controller
         $module = Module::get('__module_name__');
         $listing_cols = $this->listing_cols;
         
-        $values = DB::table('__db_table_name__')->select($listing_cols)->whereNull('deleted_at');
+        $values = DB::connection('mongodb')->collection('__db_table_name__')->select($listing_cols)->whereNull('deleted_at');
         $out = Datatables::of($values)->make();
         $data = $out->getData();
         

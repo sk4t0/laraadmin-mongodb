@@ -214,7 +214,7 @@ class PermissionsController extends Controller
 	 */
 	public function dtajax()
 	{
-		$values = DB::table('permissions')->select($this->listing_cols)->whereNull('deleted_at');
+		$values = DB::connection('mongodb')->collection('permissions')->select($this->listing_cols)->whereNull('deleted_at');
 		$out = Datatables::of($values)->make();
 		$data = $out->getData();
 
@@ -270,14 +270,14 @@ class PermissionsController extends Controller
 				$permi_role_id = 'permi_role_'.$role->id;
 				$permission_set = $request->$permi_role_id;
 				if(isset($permission_set)) {
-					$query = DB::table('permission_role')->where('permission_id', $id)->where('role_id', $role->id);
+					$query = DB::connection('mongodb')->collection('permission_role')->where('permission_id', $id)->where('role_id', $role->id);
 					if($query->count() == 0) {
-						DB::insert('insert into permission_role (permission_id, role_id) values (?, ?)', [$id, $role->id]);
+						DB::connection('mongodb')->insert('insert into permission_role (permission_id, role_id) values (?, ?)', [$id, $role->id]);
 					}
 				} else {
-					$query = DB::table('permission_role')->where('permission_id', $id)->where('role_id', $role->id);
+					$query = DB::connection('mongodb')->collection('permission_role')->where('permission_id', $id)->where('role_id', $role->id);
 					if($query->count() > 0) {
-						DB::delete('delete from permission_role where permission_id = "'.$id.'" AND role_id = "'.$role->id.'" ');
+						DB::connection('mongodb')->delete('delete from permission_role where permission_id = "'.$id.'" AND role_id = "'.$role->id.'" ');
 					}
 				}
 			}

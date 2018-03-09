@@ -394,8 +394,8 @@ class CodeGenerator
                     $migrationFileName = $fileExistName;
                 } else {
                     // If migration not exists in migrations table
-                    if(\DB::table('migrations')->where('migration', 'like', '%' . $migrationName . '%')->count() == 0) {
-                        \DB::table('migrations')->insert([
+                    if(\DB::connection('mongodb')->collection('migrations')->where('migration', 'like', '%' . $migrationName . '%')->count() == 0) {
+                        \DB::connection('mongodb')->collection('migrations')->insert([
                             'migration' => str_replace(".php", "", $migrationFileName),
                             'batch' => 1
                         ]);

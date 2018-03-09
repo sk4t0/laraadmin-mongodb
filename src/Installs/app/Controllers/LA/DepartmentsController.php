@@ -211,7 +211,7 @@ class DepartmentsController extends Controller
 	 */
 	public function dtajax()
 	{
-		$values = DB::table('departments')->select($this->listing_cols)->whereNull('deleted_at');
+		$values = DB::connection('mongodb')->collection('departments')->select($this->listing_cols)->whereNull('deleted_at');
 		$out = Datatables::of($values)->make();
 		$data = $out->getData();
 

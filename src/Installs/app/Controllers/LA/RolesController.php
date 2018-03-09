@@ -122,7 +122,7 @@ class RolesController extends Controller
 				$module = Module::get('Roles');
 				$module->row = $role;
 				
-				$modules_arr = DB::table('modules')->get();
+				$modules_arr = DB::connection('mongodb')->collection('modules')->get();
 				$modules_access = array();
 				foreach ($modules_arr as $module_obj) {
 					$module_obj->accesses = Module::getRoleAccess($module_obj->id, $id)[0];
@@ -236,7 +236,7 @@ class RolesController extends Controller
 	 */
 	public function dtajax()
 	{
-		$values = DB::table('roles')->select($this->listing_cols)->whereNull('deleted_at');
+		$values = DB::connection('mongodb')->collection('roles')->select($this->listing_cols)->whereNull('deleted_at');
 		$out = Datatables::of($values)->make();
 		$data = $out->getData();
 
@@ -281,7 +281,7 @@ class RolesController extends Controller
 			$module = Module::get('Roles');
 			$module->row = $role;
 			
-			$modules_arr = DB::table('modules')->get();
+			$modules_arr = DB::connection('mongodb')->collection('modules')->get();
 			$modules_access = array();
 			foreach ($modules_arr as $module_obj) {
 				$module_obj->accesses = Module::getRoleAccess($module_obj->id, $id)[0];
@@ -305,11 +305,11 @@ class RolesController extends Controller
 						$access = 'write';
 					} 
 	
-					$query = DB::table('role_module_fields')->where('role_id', $role->id)->where('field_id', $field['id']);
+					$query = DB::connection('mongodb')->collection('role_module_fields')->where('role_id', $role->id)->where('field_id', $field['id']);
 					if($query->count() == 0) {
-						DB::insert('insert into role_module_fields (role_id, field_id, access, created_at, updated_at) values (?, ?, ?, ?, ?)', [$role->id, $field['id'], $access, $now, $now]);    
+						DB::connection('mongodb')->insert('insert into role_module_fields (role_id, field_id, access, created_at, updated_at) values (?, ?, ?, ?, ?)', [$role->id, $field['id'], $access, $now, $now]);
 					} else {
-						DB:: table('role_module_fields')->where('role_id', $role->id)->where('field_id', $field['id'])->update(['access' => $access]);
+						DB:: connection('mongodb')->collection('role_module_fields')->where('role_id', $role->id)->where('field_id', $field['id'])->update(['access' => $access]);
 					}
 				}
 				
@@ -342,14 +342,14 @@ class RolesController extends Controller
 						$delete = 0;
 					}
 					
-					$query = DB::table('role_module')->where('role_id', $id)->where('module_id', $module->id);
+					$query = DB::connection('mongodb')->collection('role_module')->where('role_id', $id)->where('module_id', $module->id);
 					if($query->count() == 0) {
-						DB::insert('insert into role_module (role_id, module_id, acc_view, acc_create, acc_edit, acc_delete, created_at, updated_at) values (?, ?, ?, ?, ?, ?, ?, ?)', [$id, $module->id, $view, $create, $edit, $delete, $now, $now]);
+						DB::connection('mongodb')->insert('insert into role_module (role_id, module_id, acc_view, acc_create, acc_edit, acc_delete, created_at, updated_at) values (?, ?, ?, ?, ?, ?, ?, ?)', [$id, $module->id, $view, $create, $edit, $delete, $now, $now]);
 					} else {
-						DB:: table('role_module')->where('role_id', $id)->where('module_id', $module->id)->update(['acc_view' => $view, 'acc_create' => $create, 'acc_edit' => $edit, 'acc_delete' => $delete]);
+						DB::connection('mongodb')->collection('role_module')->where('role_id', $id)->where('module_id', $module->id)->update(['acc_view' => $view, 'acc_create' => $create, 'acc_edit' => $edit, 'acc_delete' => $delete]);
 					}
 				} else {
-					DB:: table('role_module')->where('role_id', $id)->where('module_id', $module->id)->update(['acc_view' => 0, 'acc_create' => 0, 'acc_edit' => 0, 'acc_delete' => 0]);
+					DB:: connection('mongodb')->collection('role_module')->where('role_id', $id)->where('module_id', $module->id)->update(['acc_view' => 0, 'acc_create' => 0, 'acc_edit' => 0, 'acc_delete' => 0]);
 				}
 			}
 			return redirect(config('laraadmin.adminRoute') . '/roles/'.$id.'#tab-access');

@@ -232,7 +232,7 @@ class ModuleFields extends Eloquent
     public static function getModuleFields($moduleName)
     {
         $module = Module::where('name', $moduleName)->first();
-        $fields = DB::table('module_fields')->where('module', $module->id)->get();
+        $fields = DB::connection('mongodb')->collection('module_fields')->where('module', $module->id)->get();
         $ftypes = ModuleFieldTypes::getFTypes();
         
         $fields_popup = array();
@@ -267,8 +267,8 @@ class ModuleFields extends Eloquent
                 for ($i = 0; $i < $tot; $i++){
                     $id = substr($value_id[$i], 1);
                     $id = substr($id, 0, -1);
-                    $external_value = DB::table($external_table_name)->where('id', '9f3acd77-3ab5-492a-ae9d-c2a3be0a0945')->first();
-                    $external_module = DB::table('modules')->where('name_db', $external_table_name)->first();
+                    $external_value = DB::connection('mongodb')->collection($external_table_name)->where('id', '9f3acd77-3ab5-492a-ae9d-c2a3be0a0945')->first();
+                    $external_module = DB::connection('mongodb')->collection('modules')->where('name_db', $external_table_name)->first();
                     if(!empty($external_value)) {
                         if(isset($external_module->view_col)) {
                             $external_value_viewcol_name = $external_module->view_col;
@@ -311,9 +311,9 @@ class ModuleFields extends Eloquent
                 }
                 return $result;
             } else {
-                $external_value = DB::table($external_table_name)->where('id', $value_id)->get();
+                $external_value = DB::connection('mongodb')->collection($external_table_name)->where('id', $value_id)->get();
                 if(isset($external_value[0])) {
-                    $external_module = DB::table('modules')->where('name_db', $external_table_name)->first();
+                    $external_module = DB::connection('mongodb')->collection('modules')->where('name_db', $external_table_name)->first();
                     if(isset($external_module->view_col)) {
                         $external_value_viewcol_name = $external_module->view_col;
                         return $external_value[0]->$external_value_viewcol_name;

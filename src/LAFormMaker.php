@@ -673,7 +673,7 @@ class LAFormMaker
                         $model = "App\\Models\\" . ucfirst(str_singular($table_name));
                         $result = $model::all();
                     } else {
-                        $result = \DB::table($table_name)->get();
+                        $result = \DB::connection('mongodb')->collection($table_name)->get();
                     }
                     // find view column name
                     $view_col = "";
@@ -710,7 +710,7 @@ class LAFormMaker
                         // Skipped efforts to detect view column name
                     }
                 } else if(Schema::hasTable($json)) {
-                    // $array = \DB::table($table_name)->get();
+                    // $array = \DB::connection('mongodb')->collection($table_name)->get();
                 }
             }
         } else if(is_string($json)) {

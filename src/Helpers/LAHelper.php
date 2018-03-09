@@ -66,7 +66,7 @@ class LAHelper
     public static function getDBTables($remove_tables = [])
     {
         if(env('DB_CONNECTION') == "sqlite") {
-            $tables_sqlite = DB::select('select * from sqlite_master where type="table"');
+            $tables_sqlite = DB::connection('mongodb')->select('select * from sqlite_master where type="table"');
             $tables = array();
             foreach($tables_sqlite as $table) {
                 if($table->tbl_name != 'sqlite_sequence') {
@@ -74,15 +74,15 @@ class LAHelper
                 }
             }
         } else if(env('DB_CONNECTION') == "pgsql") {
-            $tables_pgsql = DB::select("SELECT table_name FROM information_schema.tables WHERE table_type = 'BASE TABLE' AND table_schema = 'public' ORDER BY table_name;");
+            $tables_pgsql = DB::connection('mongodb')->select("SELECT table_name FROM information_schema.tables WHERE table_type = 'BASE TABLE' AND table_schema = 'public' ORDER BY table_name;");
             $tables = array();
             foreach($tables_pgsql as $table) {
                 $tables[] = $table->table_name;
             }
         } else if(env('DB_CONNECTION') == "mysql") {
-            $tables = DB::select('SHOW TABLES');
+            $tables = DB::connection('mongodb')->select('SHOW TABLES');
         } else {
-            $tables = DB::select('SHOW TABLES');
+            $tables = DB::connection('mongodb')->select('SHOW TABLES');
         }
         
         $tables_out = array();

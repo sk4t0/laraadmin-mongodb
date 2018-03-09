@@ -211,7 +211,7 @@ class OrganizationsController extends Controller
 	 */
 	public function dtajax()
 	{
-		$values = DB::table('organizations')->select($this->listing_cols)->whereNull('deleted_at');
+		$values = DB::connection('mongodb')->collection('organizations')->select($this->listing_cols)->whereNull('deleted_at');
 		$out = Datatables::of($values)->make();
 		$data = $out->getData();
 

@@ -146,7 +146,7 @@ class BackupsController extends Controller
 	 */
 	public function dtajax()
 	{
-		$values = DB::table('backups')->select($this->listing_cols)->orderBy('created_at', 'desc')->whereNull('deleted_at');
+		$values = DB::connection('mongodb')->collection('backups')->select($this->listing_cols)->orderBy('created_at', 'desc')->whereNull('deleted_at');
 		$out = Datatables::of($values)->make();
 		$data = $out->getData();
 
