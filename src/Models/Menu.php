@@ -9,7 +9,7 @@
 
 namespace Dwij\Laraadmin\Models;
 
-use Jenssegers\Mongodb\Eloquent\Model;
+use Jenssegers\Mongodb\Eloquent\Model as Eloquent;
 //use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Schema;
 use Jenssegers\Mongodb\Schema\Blueprint;
@@ -21,7 +21,7 @@ use Dwij\Laraadmin\Helpers\LAHelper;
  *
  * Menu Model which looks after Menus in Sidebar and Navbar
  */
-class Menu extends Model
+class Menu extends Eloquent
 {
     protected $table = 'la_menus';
     

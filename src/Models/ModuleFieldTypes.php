@@ -9,10 +9,10 @@
 
 namespace Dwij\Laraadmin\Models;
 
-use Jenssegers\Mongodb\Eloquent\Model;
+use Jenssegers\Mongodb\Eloquent\Model as Eloquent;
 //use Illuminate\Database\Eloquent\Model;
 
-class ModuleFieldTypes extends Model
+class ModuleFieldTypes extends Eloquent
 {
     protected $table = 'module_field_types';
     

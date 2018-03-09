@@ -9,7 +9,7 @@
 
 namespace Dwij\Laraadmin\Models;
 
-use Jenssegers\Mongodb\Eloquent\Model;
+use Jenssegers\Mongodb\Eloquent\Model as Eloquent;
 //use Illuminate\Database\Eloquent\Model;
 use Schema;
 use Log;
@@ -24,7 +24,7 @@ use Dwij\Laraadmin\Models\Module;
  * Module Fields Model which works for create / update of fields via "Module Manager"
  * This uses "Module::create_field_schema" method to actually create database schema
  */
-class ModuleFields extends Model
+class ModuleFields extends Eloquent
 {
     protected $table = 'module_fields';
     

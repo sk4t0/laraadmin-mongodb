@@ -9,7 +9,7 @@
 
 namespace Dwij\Laraadmin\Models;
 
-use Jenssegers\Mongodb\Eloquent\Model;
+use Jenssegers\Mongodb\Eloquent\Model as Eloquent;
 //use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Schema;
 use Jenssegers\Mongodb\Schema\Blueprint;
@@ -26,7 +26,7 @@ use Dwij\Laraadmin\Helpers\LAHelper;
  * It also handles Module migrations via "generate" method to create Module Schema in Database.
  *
  */
-class Module extends Model
+class Module extends Eloquent
 {
     protected $table = 'modules';
     

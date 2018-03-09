@@ -9,7 +9,7 @@
 
 namespace Dwij\Laraadmin\Models;
 
-use Jenssegers\Mongodb\Eloquent\Model;
+use Jenssegers\Mongodb\Eloquent\Model as Eloquent;
 //use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Schema;
 use Jenssegers\Mongodb\Schema\Blueprint;
@@ -25,7 +25,7 @@ use Dwij\Laraadmin\Helpers\LAHelper;
  * Config Class looks after LaraAdmin configurations.
  * Check details on http://laraadmin.com/docs
  */
-class LAConfigs extends Model
+class LAConfigs extends Eloquent
 {
     protected $table = 'la_configs';
     
