@@ -390,7 +390,7 @@ class ModuleController extends Controller
                 
                 $query = DB::collection('role_module_fields')->where('role_id', $role->id)->where('field_id', $field['id']);
                 if($query->count() == 0) {
-                    DB::insert('insert into role_module_fields (role_id, field_id, access, created_at, updated_at) values (?, ?, ?, ?, ?)', [$role->id, $field['id'], $access, $now, $now]);
+                    DB::collection('role_module_fields')->insert(['role_id' => $role->id, 'field_id' => $field['id'], 'access' => $access_fields, 'created_at' => $now, 'updated_at' => $now]);
                 } else {
                     DB::collection('role_module_fields')->where('role_id', $role->id)->where('field_id', $field['id'])->update(['access' => $access]);
                 }
@@ -427,7 +427,7 @@ class ModuleController extends Controller
                 
                 $query = DB::collection('role_module')->where('role_id', $role->id)->where('module_id', $id);
                 if($query->count() == 0) {
-                    DB::insert('insert into role_module (role_id, module_id, acc_view, acc_create, acc_edit, acc_delete, created_at, updated_at) values (?, ?, ?, ?, ?, ?, ?, ?)', [$role->id, $id, $view, $create, $edit, $delete, $now, $now]);
+                    DB::collection('role_module')->insert(['role_id' => $role->id, 'module_id' => $id, 'acc_view' => $view, 'acc_create' => $create, 'acc_edit' => $edit, 'acc_delete' => $delete, 'created_at' => $now, 'updated_at' => $now]);
                 } else {
                     DB::collection('role_module')->where('role_id', $role->id)->where('module_id', $id)->update(['acc_view' => $view, 'acc_create' => $create, 'acc_edit' => $edit, 'acc_delete' => $delete]);
                 }

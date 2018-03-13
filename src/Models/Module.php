@@ -8,14 +8,17 @@
  */
 
 namespace Dwij\Laraadmin\Models;
-
+use App\Role;
 use Jenssegers\Mongodb\Eloquent\Model as Eloquent;
+
 //use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Schema;
 use Jenssegers\Mongodb\Schema\Blueprint;
 use Exception;
 use Log;
-use Jenssegers\Mongodb\Connection as DB;
+use Illuminate\Support\Facades\DB;
+
+//use Jenssegers\Mongodb\Connection as DB;
 use Dwij\Laraadmin\Helpers\LAHelper;
 
 /**
@@ -35,9 +38,13 @@ class Module extends Eloquent
     ];
     
     protected $hidden = [
-    
+
     ];
-    
+
+    public function fields(){
+        return $this->hasMany('\Dwij\Laraadmin\Models\ModuleFields', 'module');
+    }
+
     /**
      * Generates Module Base by taking Module Name and Module FontAwesome Icon
      * It firstly checks if Module is already generated or not then
@@ -925,7 +932,7 @@ class Module extends Eloquent
         // If Module is found in database also attach its field array to it.
         if(isset($module)) {
             $module = $module->toArray();
-            $fields = ModuleFields::where('module', $module['id'])->orderBy('sort', 'asc')->get()->toArray();
+            $fields = ModuleFields::where('module', $module['_id'])->orderBy('sort', 'asc')->get()->toArray();
             $fields2 = array();
             foreach($fields as $field) {
                 $fields2[$field['colname']] = $field;
@@ -1309,7 +1316,7 @@ class Module extends Eloquent
         $roles = array();
         
         if(is_string($module_id)) {
-            $module = Module::get($module_id);
+            $module = Module::find($module_id);
             $module_id = $module->id;
         }
         
@@ -1434,11 +1441,11 @@ class Module extends Eloquent
     public static function setDefaultRoleAccess($module_id, $role_id, $access_type = "readonly")
     {
         $module = Module::find($module_id);
-        $module = Module::get($module_id);
+        //$module = Module::get($module_id);
         
         // Log::debug('Module:setDefaultRoleAccess ('.$module_id.', '.$role_id.', '.$access_type.')');
-        
-        $role = DB::collection('roles')->where('id', $role_id)->first();
+
+        $role = Role::findOrFail($role_id);
         
         $access_view = 0;
         $access_create = 0;
@@ -1468,7 +1475,8 @@ class Module extends Eloquent
         
         $module_perm = DB::collection('role_module')->where('role_id', $role->id)->where('module_id', $module->id)->first();
         if(!isset($module_perm->id)) {
-            DB::insert('insert into role_module (role_id, module_id, acc_view, acc_create, acc_edit, acc_delete, created_at, updated_at) values (?, ?, ?, ?, ?, ?, ?, ?)', [$role->id, $module->id, $access_view, $access_create, $access_edit, $access_delete, $now, $now]);
+            DB::collection('role_module')->insert( ['role_id' => $role->id, 'module_id' => $module->id, 'acc_view' => $access_view, 'acc_create' => $access_create, 'acc_edit' => $access_edit, 'acc_delete' => $access_delete, 'created_at' => $now, 'updated_at' => $now]);
+            //DB::insert('insert into role_module (role_id, module_id, acc_view, acc_create, acc_edit, acc_delete, created_at, updated_at) values ("'.$role->id . '", "$module->id, $access_view, $access_create, $access_edit, $access_delete, $now, $now)');
         } else {
             DB::collection('role_module')->where('role_id', $role->id)->where('module_id', $module->id)->update(['acc_view' => $access_view, 'acc_create' => $access_create, 'acc_edit' => $access_edit, 'acc_delete' => $access_delete]);
         }
@@ -1479,7 +1487,7 @@ class Module extends Eloquent
             // find role field permission
             $field_perm = DB::collection('role_module_fields')->where('role_id', $role->id)->where('field_id', $field['id'])->first();
             if(!isset($field_perm->id)) {
-                DB::insert('insert into role_module_fields (role_id, field_id, access, created_at, updated_at) values (?, ?, ?, ?, ?)', [$role->id, $field['id'], $access_fields, $now, $now]);
+                DB::collection('role_module_fields')->insert(['role_id' => $role->id, 'field_id' => $field['id'], 'access' => $access_fields, 'created_at' => $now, 'updated_at' => $now]);
             } else {
                 DB::collection('role_module_fields')->where('role_id', $role->id)->where('field_id', $field['id'])->update(['access' => $access_fields]);
             }
@@ -1517,7 +1525,7 @@ class Module extends Eloquent
         // find role field permission
         $field_perm = DB::collection('role_module_fields')->where('role_id', $role->id)->where('field_id', $field->id)->first();
         if(!isset($field_perm->id)) {
-            DB::insert('insert into role_module_fields (role_id, field_id, access, created_at, updated_at) values (?, ?, ?, ?, ?)', [$role->id, $field->id, $access_fields, $now, $now]);
+            DB::collection('role_module_fields')->insert(['role_id' => $role->id, 'field_id' => $field->id, 'access' => $access_fields, 'created_at' => $now, 'updated_at' => $now]);
         } else {
             DB::collection('role_module_fields')->where('role_id', $role->id)->where('field_id', $field->id)->update(['access' => $access_fields]);
         }

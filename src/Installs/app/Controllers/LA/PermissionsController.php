@@ -272,12 +272,12 @@ class PermissionsController extends Controller
 				if(isset($permission_set)) {
 					$query = DB::collection('permission_role')->where('permission_id', $id)->where('role_id', $role->id);
 					if($query->count() == 0) {
-						DB::insert('insert into permission_role (permission_id, role_id) values (?, ?)', [$id, $role->id]);
+						DB::collection('permission_role')->insert( ['permission_id' => $id, 'role_id' => $role->id]);
 					}
 				} else {
 					$query = DB::collection('permission_role')->where('permission_id', $id)->where('role_id', $role->id);
 					if($query->count() > 0) {
-						DB::delete('delete from permission_role where permission_id = "'.$id.'" AND role_id = "'.$role->id.'" ');
+						DB::collection('permission_role')->where('permission_id', $id)->where('role_id', $role->id)->delete();
 					}
 				}
 			}
